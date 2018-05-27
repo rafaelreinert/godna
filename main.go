@@ -21,16 +21,15 @@ type logLine struct {
 	Tags      []string `json:"_tag"`
 }
 
-var (
-	app        = kingpin.New("godna", "A logdna backup files mananger application.")
-	split      = app.Command("split", "split a log.")
-	file       = split.Arg("file", "File to Split.").Required().File()
-	outputDir  = split.Arg("output_dir", "Folder where GoDNA will save the splited logs.").Required().ExistingDir()
-	containers = app.Flag("containers", "Filter by container.").Short('c').Strings()
-	tags       = app.Flag("host", "Filter by Tag.").Short('t').Strings()
-)
-
 func main() {
+
+	var app = kingpin.New("godna", "A logdna backup files mananger application.")
+	var split = app.Command("split", "split a log.")
+	var file = split.Arg("file", "File to Split.").Required().File()
+	var outputDir = split.Arg("output_dir", "Folder where GoDNA will save the splited logs.").Required().ExistingDir()
+	var containers = app.Flag("containers", "Filter by container.").Short('c').Strings()
+	var tags = app.Flag("host", "Filter by Tag.").Short('t').Strings()
+
 	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
 	case split.FullCommand():
 		splitFile(*file, *outputDir, *containers, *tags)
@@ -64,17 +63,13 @@ func filterLines(ch chan *logLine, fch chan *logLine, containers []string, tags 
 	close(fch)
 }
 
-func index(vs []string, t string) int {
-	for i, v := range vs {
+func include(vs []string, t string) bool {
+	for _, v := range vs {
 		if v == t {
-			return i
+			return true
 		}
 	}
-	return -1
-}
-
-func include(vs []string, t string) bool {
-	return index(vs, t) >= 0
+	return false
 }
 
 func any(vs []string, svs []string) bool {
@@ -96,17 +91,23 @@ func followFileReading(ch chan int, f *os.File) {
 	writer := uilive.New()
 	writer.Start()
 	defer writer.Stop()
-	for _ = range ch {
-		ps, err := f.Seek(0, 1)
+	for range ch {
+		ps, er := f.Seek(0, 1)
+		if er != nil {
+			log.WithError(er).Error("Error while seeking the input file")
+		}
 		t := time.Now()
 		elapsed := t.Sub(start)
 		tf := ((elapsed.Seconds()) * float64(fs.Size()-ps)) / float64(ps)
-		if err != nil {
-			log.WithError(err).Error("Error while seeking the input file")
+		_, er = fmt.Fprintf(writer, "Processing.. %.2f%% of %s, estimated time: \t%v\r\n", float64(ps*100)/float64(fs.Size()), fs.Name(), time.Duration(tf)*time.Second)
+		if er != nil {
+			log.WithError(er).Error("Error while updating the status")
 		}
-		fmt.Fprintf(writer, "Processing.. %.2f%% of %s, estimated time: \t%v\n", float64(ps*100)/float64(fs.Size()), fs.Name(), time.Duration(tf)*time.Second)
 	}
-	fmt.Fprintf(writer, "Finished: Processed 100%% of %s\n", fs.Name())
+	_, err = fmt.Fprintf(writer, "Finished: Processed 100%% of %s\n", fs.Name())
+	if err != nil {
+		log.WithError(err).Error("Error while updating the status")
+	}
 }
 
 func readFile(ch chan *logLine, f *os.File) {
@@ -115,7 +116,7 @@ func readFile(ch chan *logLine, f *os.File) {
 		log.WithError(err).Fatal("Error while opening the GZIP reader")
 		os.Exit(1)
 	}
-	defer r.Close()
+	defer r.Close() // nolint: errcheck
 	reader := bufio.NewReaderSize(r, 1024*56)
 	frch := make(chan int, 100)
 	go followFileReading(frch, f)
@@ -124,7 +125,6 @@ func readFile(ch chan *logLine, f *os.File) {
 		var part []byte
 		if part, err = reader.ReadSlice('\n'); err != nil {
 			if err == io.EOF {
-				err = nil
 				break
 			}
 			log.WithError(err).Error("Error while reading the input file")
@@ -162,7 +162,6 @@ func writeFile(chw chan *logLine, outputDir string) {
 		_, err = f.Write([]byte(l.Line + "\n"))
 		if err != nil {
 			log.WithError(err).Error("Error while writing the output file")
-			return
 		}
 	}
 
@@ -171,6 +170,9 @@ func writeFile(chw chan *logLine, outputDir string) {
 
 func closeFiles(fs map[string]*os.File) {
 	for _, f := range fs {
-		f.Close()
+		err := f.Close()
+		if err != nil {
+			log.WithError(err).Error("Error while closing a output file")
+		}
 	}
 }
