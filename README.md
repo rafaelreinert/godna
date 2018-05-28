@@ -1,6 +1,6 @@
 # GoDNA
 
-GoDNA ia a tool to handle with LogDNA backup file.
+GoDNA ia a tool to handle LogDNA backup file.
 
 ## Split 
 
