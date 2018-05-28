@@ -18,25 +18,32 @@ type Split struct {
 	Containers []string
 	Tags       []string
 	r          *backup.Reader
+	w          *backup.Writer
+	filter     *filter.Filter
+	ch         chan *backup.LogLine
+}
+
+func NewSplit(file *os.File, outputDir string, containers []string, tags []string) *Split {
+	fmt.Println("Starting..")
+	r := backup.NewReader(file)
+	w := backup.NewWriter(outputDir)
+	filter := &filter.Filter{Containers: containers, Tags: tags}
+	ch := make(chan *backup.LogLine, 1000)
+	return &Split{File: file, OutputDir: outputDir, Containers: containers, Tags: tags, r: r, w: w, ch: ch, filter: filter}
 }
 
 func (s *Split) Do() {
-	fmt.Println("Starting..")
-	s.r = backup.NewReader(s.File)
-	ch := make(chan *backup.LogLine, 1000)
-	go s.r.ReadAll(ch)
 	fmt.Println("Started")
 	var wg sync.WaitGroup
 	wg.Add(1)
+	go s.r.ReadAll(s.ch)
 	go s.followFileReading(&wg)
-	filter := filter.Filter{Containers: s.Containers, Tags: s.Tags}
-	w := backup.NewWriter(s.OutputDir)
-	for l := range ch {
-		if filter.Do(l) {
-			w.WriteInFileByServer(l)
+	for l := range s.ch {
+		if s.filter.Do(l) {
+			s.w.WriteInFileByServer(l)
 		}
 	}
-	w.CloseFiles()
+	s.w.CloseFiles()
 	wg.Wait()
 	fmt.Println("Finished")
 }
@@ -53,15 +60,11 @@ func (s *Split) followFileReading(wg *sync.WaitGroup) {
 		t := time.Now()
 		elapsed := t.Sub(start)
 		tf := ((elapsed.Seconds()) * float64(st.FileInfo.Size()-st.Offset)) / float64(st.Offset)
-		_, err := fmt.Fprintf(writer, "Processing.. %.2f%% of %s, estimated time: \t%v\r\n", float64(st.Offset*100)/float64(st.FileInfo.Size()), st.FileInfo.Name(), time.Duration(tf)*time.Second)
+		_, err := fmt.Fprintf(writer, "Processing.. %.2f%% of %s,  estimated time: \t%-v \n", float64(st.Offset*100)/float64(st.FileInfo.Size()), st.FileInfo.Name(), time.Duration(tf)*time.Second)
 		if err != nil {
 			log.WithError(err).Error("Error while updating the status")
 		}
 		if st.Offset == st.FileInfo.Size() {
-			_, err := fmt.Fprintf(writer, "Finished: Processed 100%% of %s\n", st.FileInfo.Name())
-			if err != nil {
-				log.WithError(err).Error("Error while updating the status")
-			}
 			break
 		}
 	}

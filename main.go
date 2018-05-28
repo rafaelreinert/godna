@@ -18,7 +18,7 @@ func main() {
 
 	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
 	case split.FullCommand():
-		s := cmd.Split{File: *file, OutputDir: *outputDir, Containers: *containers, Tags: *tags}
+		s := cmd.NewSplit(*file, *outputDir, *containers, *tags)
 		s.Do()
 	}
 }
