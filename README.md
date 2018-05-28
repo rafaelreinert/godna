@@ -2,9 +2,9 @@
 
 GoDNA ia a tool to handle with LogDNA backup file.
 
-## Features 
+## Split 
 
-Split: Split the backup in many files per host
+Split the backup in many files per host
 
 ```
 usage: godna split <file> <output_dir>
