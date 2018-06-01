@@ -23,13 +23,21 @@ Args:
 
 ```
 
+## Exemples
+
 Filter by containers (will save only container matched files):
-`godna split -c postgres -c node ~/Backup/e56cd18d89.2018-04-29.json.gz ~/logs`
+``` shell
+godna split -c postgres -c node ~/Backup/e56cd18d89.2018-04-29.json.gz ~/logs
+```
 
 Filter by tags (will save only tags matched files):
-`godna split -t kubernetes -t web ~/Backup/e56cd18d89.2018-04-29.json.gz ~/logs`
+``` shell
+godna split -t kubernetes -t web ~/Backup/e56cd18d89.2018-04-29.json.gz ~/logs
+```
 
 Filter by tags or containers (will save only tags or containers matched files):
-`godna split -t kubernetes -c postgres ~/Backup/e56cd18d89.2018-04-29.json.gz ~/logs`
+``` shell
+godna split -t kubernetes -c postgres ~/Backup/e56cd18d89.2018-04-29.json.gz ~/logs
+```
 
 
