@@ -12,6 +12,7 @@ import (
 	"github.com/rafaelreinert/godna/pkg/filter"
 )
 
+// A Split can be read a json.gzip backup file, split, filter and write in many files(by host) with the true log line.
 type Split struct {
 	File       *os.File
 	OutputDir  string
@@ -23,6 +24,7 @@ type Split struct {
 	ch         chan *backup.LogLine
 }
 
+// NewSplit creates a new Split.
 func NewSplit(file *os.File, outputDir string, containers []string, tags []string) *Split {
 	fmt.Println("Starting..")
 	r := backup.NewReader(file)
@@ -32,6 +34,7 @@ func NewSplit(file *os.File, outputDir string, containers []string, tags []strin
 	return &Split{File: file, OutputDir: outputDir, Containers: containers, Tags: tags, r: r, w: w, ch: ch, filter: filter}
 }
 
+// Do read a json.gzip backup file, split, filter and write in many files(by host) with the true log line.
 func (s *Split) Do() {
 	fmt.Println("Started")
 	var wg sync.WaitGroup

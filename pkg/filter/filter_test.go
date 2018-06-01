@@ -6,6 +6,7 @@ import (
 	"github.com/rafaelreinert/godna/pkg/backup"
 )
 
+// nolint: gocyclo
 func TestDoWithEmptyFilters(t *testing.T) {
 	containers := []string{}
 	tags := []string{}
@@ -27,6 +28,7 @@ func TestDoWithEmptyFilters(t *testing.T) {
 
 }
 
+// nolint: gocyclo
 func TestDoWithContainerFilters(t *testing.T) {
 	containers := []string{"mysql", "grafana"}
 	tags := []string{}
@@ -50,6 +52,7 @@ func TestDoWithContainerFilters(t *testing.T) {
 
 }
 
+// nolint: gocyclo
 func TestDoWithTagsFilters(t *testing.T) {
 	containers := []string{}
 	tags := []string{"db"}
