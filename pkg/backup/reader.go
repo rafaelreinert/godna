@@ -41,10 +41,11 @@ func (r *Reader) ReadAll(output chan *LogLine) {
 	for {
 		var part []byte
 		if part, err = reader.ReadSlice('\n'); err != nil {
-			if err == io.EOF {
+			if err == io.EOF && len(part) == 0 {
 				break
+			} else if err != io.EOF {
+				log.WithError(err).Error("Error while reading the input file")
 			}
-			log.WithError(err).Error("Error while reading the input file")
 		}
 		var l LogLine
 		err := json.Unmarshal(part, &l)

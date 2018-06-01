@@ -2,6 +2,7 @@ package backup
 
 import (
 	"os"
+	"path/filepath"
 
 	"github.com/apex/log"
 )
@@ -20,7 +21,7 @@ func (w *Writer) WriteInFileByServer(l *LogLine) {
 	var err error
 	f, ok := w.files[l.Host]
 	if !ok {
-		f, err = os.Create(w.OutputDir + "/" + l.Host + ".log")
+		f, err = os.Create(filepath.Join(w.OutputDir, l.Host+".log"))
 		if err != nil {
 			log.WithError(err).Fatal("Error while creating a output file")
 			os.Exit(1)
