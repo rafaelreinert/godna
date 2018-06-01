@@ -1,0 +1,9 @@
+builds:
+  - main: main.go
+    binary: godna
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
