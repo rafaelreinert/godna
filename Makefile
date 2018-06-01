@@ -34,7 +34,7 @@ lint:
 
 
 # Run all the tests and code checks
-ci: build test lint
+ci: build test
 .PHONY: ci
 
 # Build a beta version
