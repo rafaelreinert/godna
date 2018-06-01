@@ -15,7 +15,7 @@ Flags:
                        --help-man).
   -c, --containers=CONTAINERS ...  
                        Filter by container.
-  -t, --host=HOST ...  Filter by Tag.
+  -t, --tags=TAGS ...  Filter by Tag.
 
 Args:
   <file>        File to Split.
