@@ -40,6 +40,7 @@ func createTempFile() (string, string) {
 	return tmpfn, dir
 }
 
+// nolint: gocyclo
 func TestReadAll(t *testing.T) {
 	name, dir := createTempFile()
 	defer os.RemoveAll(dir)

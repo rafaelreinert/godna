@@ -8,6 +8,7 @@ import (
 	"testing"
 )
 
+// nolint: gocyclo
 func TestWriteInFileByServer(t *testing.T) {
 	dir, err := ioutil.TempDir("", "logdna-logs")
 	if err != nil {

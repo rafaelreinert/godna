@@ -10,16 +10,22 @@ import (
 	"github.com/apex/log"
 )
 
+// A Status contain  the status of reading.
+// FileInfo is a os.FileInfo of reading file.
+// Offset is a position where the reader read at moment
 type Status struct {
 	FileInfo os.FileInfo
 	Offset   int64
 }
 
+// A Reader can be read to retrieve
+// uncompressed data from logdna backup file compressed with gzip.
 type Reader struct {
 	File   *os.File
 	Status *Status
 }
 
+// NewReader creates a new Reader reading the given file.
 func NewReader(file *os.File) *Reader {
 	fs, err := file.Stat()
 	if err != nil {
@@ -30,6 +36,9 @@ func NewReader(file *os.File) *Reader {
 	return &Reader{File: file, Status: s}
 }
 
+// ReadAll reads all file until EOF,
+// Each row is parsed to a LogLine and sent to output channel.
+// After EOF the output channel will be closed
 func (r *Reader) ReadAll(output chan *LogLine) {
 	gzr, err := gzip.NewReader(r.File)
 	if err != nil {

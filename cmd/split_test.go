@@ -50,6 +50,7 @@ func createOutputDir() string {
 	return dir
 }
 
+// nolint: gocyclo
 func TestSplit(t *testing.T) {
 	dir := createOutputDir()
 	defer os.RemoveAll(dir)
