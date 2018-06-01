@@ -5,6 +5,11 @@
 *.so
 *.dylib
 godna
+coverage.txt
+vendor
+debug.test
+bin/
+dist/
 
 # Test binary, build with `go test -c`
 *.test
