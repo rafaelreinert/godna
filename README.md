@@ -1,4 +1,4 @@
-# GoDNA [![Build Status](https://travis-ci.org/rafaelreinert/godna.svg?branch=master)](https://travis-ci.org/rafaelreinert/godna)
+# GoDNA [![Build Status](https://travis-ci.org/rafaelreinert/godna.svg?branch=master)](https://travis-ci.org/rafaelreinert/godna) [![codecov](https://codecov.io/gh/rafaelreinert/godna/branch/master/graph/badge.svg)](https://codecov.io/gh/rafaelreinert/godna)
 GoDNA ia a tool to handle LogDNA backup file.
 
 ## Split 
