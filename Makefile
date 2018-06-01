@@ -9,6 +9,7 @@ else
 	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 endif
 	dep ensure -vendor-only
+	gometalinter.v2 --install
 .PHONY: setup
 
 # Run all the tests
