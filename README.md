@@ -39,5 +39,8 @@ Filter by tags or containers (will save only tags or containers matched files):
 ``` shell
 godna split -t kubernetes -c postgres ~/Backup/e56cd18d89.2018-04-29.json.gz ~/logs
 ```
-
+## Install
+``` shell
+go get github.com/rafaelreinert/godna
+```
 
