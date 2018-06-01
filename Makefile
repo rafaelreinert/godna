@@ -1,6 +1,3 @@
-SOURCE_FILES?=./...
-TEST_PATTERN?=.
-TEST_OPTIONS?=
 OS=$(shell uname -s)
 
 setup:
@@ -16,7 +13,7 @@ endif
 
 # Run all the tests
 test:
-	go test $(TEST_OPTIONS) -failfast -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt $(SOURCE_FILES) -run $(TEST_PATTERN) -timeout=2m
+	go test -failfast -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt ./... -run . -timeout=2m
 .PHONY: test
 
 # Run all the tests and opens the coverage report
