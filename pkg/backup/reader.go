@@ -25,6 +25,10 @@ type Reader struct {
 	Status *Status
 }
 
+type logLineFather struct {
+	LogLine LogLine `json:"_source"`
+}
+
 // NewReader creates a new Reader reading the given file.
 func NewReader(file *os.File) *Reader {
 	fs, err := file.Stat()
@@ -56,12 +60,14 @@ func (r *Reader) ReadAll(output chan *LogLine) {
 				log.WithError(err).Error("Error while reading the input file")
 			}
 		}
-		var l LogLine
+		var l logLineFather
 		err := json.Unmarshal(part, &l)
 		if err != nil {
 			log.WithError(err).Error("Error while unmarshal a line")
 		}
-		output <- &l
+		//fmt.Println(string(part))
+		//fmt.Println(l)
+		output <- &l.LogLine
 		ps, er := r.File.Seek(0, 1)
 		if er != nil {
 			log.WithError(er).Error("Error while seeking the input file")
