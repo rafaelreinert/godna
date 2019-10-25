@@ -2,14 +2,13 @@ OS=$(shell uname -s)
 
 setup:
 	go get -u golang.org/x/tools/cmd/cover
-	go get -u gopkg.in/alecthomas/gometalinter.v2
 ifeq ($(OS), Darwin)
 	brew install dep
 else
 	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 endif
 	dep ensure -vendor-only
-	gometalinter.v2 --install
+	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.17.1
 .PHONY: setup
 
 # Run all the tests
@@ -30,7 +29,7 @@ fmt:
 
 # Run all the lintersmake 
 lint:
-	gometalinter.v2 --vendor --deadline 2m ./...
+	golangci-lint run
 .PHONY: lint
 
 
