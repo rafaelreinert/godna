@@ -29,7 +29,7 @@ fmt:
 
 # Run all the lintersmake 
 lint:
-	golangci-lint run
+	$GOPATH/bin/golangci-lint run
 .PHONY: lint
 
 
