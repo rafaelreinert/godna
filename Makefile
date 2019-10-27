@@ -7,7 +7,7 @@ setup:
 
 # Run all the tests
 test:
-	go test -failfast -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt ./... -run . -timeout=2m
+	env GO111MODULE=on go test -failfast -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt ./... -run . -timeout=2m
 .PHONY: test
 
 # Run all the tests and opens the coverage report
@@ -33,8 +33,7 @@ ci: build test lint
 
 # Build a beta version
 build:
-	go generate ./...
-	go build
+	env GO111MODULE=on  go build
 .PHONY: build
 
 .DEFAULT_GOAL := build
