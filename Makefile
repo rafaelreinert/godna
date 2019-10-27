@@ -2,7 +2,7 @@ OS=$(shell uname -s)
 
 setup:
 	go get -u golang.org/x/tools/cmd/cover
-	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | bash -s -- -b $GOPATH/bin v1.17.1
+	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | bash -s -- -b ${GOPATH}/bin v1.17.1
 .PHONY: setup
 
 # Run all the tests
@@ -23,7 +23,7 @@ fmt:
 
 # Run all the lintersmake 
 lint:
-	$GOPATH/bin/golangci-lint run
+	${GOPATH}/bin/golangci-lint run
 .PHONY: lint
 
 
